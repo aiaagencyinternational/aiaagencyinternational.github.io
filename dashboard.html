@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIA Studios — Dashboard</title>
+<style>
+  :root{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#0b0b0f;color:#e9e9ee;line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:32px 20px 64px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+  .logo{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#ff2d55,#8a2be2);display:flex;align-items:center;justify-content:center;font-weight:800}
+  h1{font-size:1.3rem;margin:0}
+  .card{background:#15151d;border:1px solid #23232e;border-radius:14px;padding:20px;margin:16px 0}
+  .card h2{font-size:1.05rem;margin:0 0 6px}
+  .muted{color:#9a9aa6;font-size:.92rem}
+  button,.btn{font:inherit;border:0;border-radius:10px;padding:11px 18px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+  .tt{background:#fe2c55;color:#fff}
+  .ghost{background:#23232e;color:#e9e9ee}
+  .row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .vid{width:120px;height:200px;border-radius:10px;background:linear-gradient(160deg,#ff2d55,#8a2be2,#3a2bd0);display:flex;align-items:center;justify-content:center;font-size:34px;flex:0 0 auto}
+  input,textarea{width:100%;background:#0b0b0f;border:1px solid #2a2a36;border-radius:8px;color:#e9e9ee;padding:10px;font:inherit;margin-top:6px}
+  .pill{display:inline-block;background:#23232e;border-radius:999px;padding:3px 10px;font-size:.8rem;color:#b9b9c4}
+  #status{margin-top:12px;font-size:.92rem}
+  .ok{color:#8affc1}.err{color:#ff9d9d}
+  a{color:#ff6b8a}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">A</div>
+    <h1>AIA Studios <span class="muted" style="font-weight:400">· Dashboard</span></h1>
+  </header>
+
+  <div class="card" id="connectCard">
+    <h2>1 · Connect your TikTok account</h2>
+    <p class="muted">Authorize AIA Studios to publish your own videos to your own TikTok account. You can revoke access anytime in TikTok settings.</p>
+    <div class="row" style="margin-top:12px">
+      <button class="tt" id="loginBtn" onclick="login()">Continue with TikTok</button>
+      <span class="pill" id="connState">Not connected</span>
+    </div>
+  </div>
+
+  <div class="card" id="postCard" style="opacity:.55">
+    <h2>2 · Publish a video</h2>
+    <p class="muted">Pick a video from your queue and publish it to your connected TikTok account.</p>
+    <div class="row" style="margin-top:14px">
+      <div class="vid">▶</div>
+      <div style="flex:1;min-width:220px">
+        <label class="muted">Caption</label>
+        <textarea id="caption" rows="2">POV: main character energy ✨</textarea>
+        <div style="margin-top:12px" class="row">
+          <button class="tt" id="postBtn" onclick="publish()" disabled>Publish to TikTok</button>
+          <span class="pill">demo video · 1080×1920</span>
+        </div>
+      </div>
+    </div>
+    <div id="status"></div>
+  </div>
+
+  <p class="muted" style="margin-top:24px">AIA Studios only publishes your own content to your own authorized account. ·
+    <a href="./privacy.html">Privacy</a> · <a href="./terms.html">Terms</a></p>
+</div>
+
+<script>
+  // ==== Config (filled once the TikTok app credentials are wired) ====
+  var CFG = {
+    CLIENT_KEY: "REPLACE_CLIENT_KEY",
+    REDIRECT_URI: "https://aiaagencyinternational.github.io/callback.html",
+    BACKEND: "REPLACE_BACKEND_EXEC_URL",   // Apps Script /exec (OAuth exchange + posting)
+    SCOPES: "user.info.basic,video.publish,video.upload"
+  };
+  function rand(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
+  function login(){
+    var state = rand(); sessionStorage.setItem("tt_state", state);
+    var u = "https://www.tiktok.com/v2/auth/authorize/?client_key="+encodeURIComponent(CFG.CLIENT_KEY)
+      +"&scope="+encodeURIComponent(CFG.SCOPES)+"&response_type=code"
+      +"&redirect_uri="+encodeURIComponent(CFG.REDIRECT_URI)+"&state="+state;
+    location.href = u;
+  }
+  // After callback, we return with ?connected=1&user=<name>
+  var p = new URLSearchParams(location.search);
+  if (p.get("connected")) {
+    document.getElementById("connState").textContent = "Connected" + (p.get("user")?(" · @"+p.get("user")):"");
+    document.getElementById("connState").className = "pill ok";
+    document.getElementById("loginBtn").textContent = "Reconnect";
+    document.getElementById("postCard").style.opacity = "1";
+    document.getElementById("postBtn").disabled = false;
+  }
+  function publish(){
+    var s = document.getElementById("status");
+    s.textContent = "Publishing to TikTok…"; s.className = "";
+    fetch(CFG.BACKEND + "?action=ttpost&caption=" + encodeURIComponent(document.getElementById("caption").value))
+      .then(function(r){return r.json();})
+      .then(function(d){ s.textContent = d.ok ? "✓ Published to your TikTok account." : ("Error: "+(d.error||"unknown")); s.className = d.ok?"ok":"err"; })
+      .catch(function(e){ s.textContent = "Error: "+e; s.className="err"; });
+  }
+</script>
+</body>
+</html>
