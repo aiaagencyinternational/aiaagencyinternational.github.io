@@ -85,6 +85,10 @@
     sc.onerror=function(){rej(new Error("network"));};
     document.body.appendChild(sc);
   });}
+  // client_key aus dem Backend holen (nutzt die Sandbox-Property) — kein Hardcode.
+  var loginReady=false;
+  jsonp(CFG.BACKEND+"?action=ttkey").then(function(d){ if(d&&d.client_key){ CFG.CLIENT_KEY=d.client_key; loginReady=true; } })
+    .catch(function(){});
   var p=new URLSearchParams(location.search);
   if(p.get("connected")){
     var cs=document.getElementById("connState");
