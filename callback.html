@@ -3,37 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Authorization complete — AIA Studios</title>
+<title>Connecting… — AIA Studios</title>
 <style>
   :root{color-scheme:dark}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
        background:#0b0b0f;color:#e9e9ee;line-height:1.6;display:flex;min-height:100vh;align-items:center;justify-content:center}
-  .box{max-width:620px;padding:32px;background:#15151d;border:1px solid #23232e;border-radius:14px;margin:20px}
-  code{display:block;background:#0b0b0f;border:1px solid #2a2a36;border-radius:8px;padding:14px;
-       word-break:break-all;margin:12px 0;color:#8affc1}
-  button{background:#ff2d55;color:#fff;border:0;border-radius:8px;padding:10px 16px;font-weight:600;cursor:pointer}
-  .muted{color:#8a8a97;font-size:.92rem}
-  h1{font-size:1.4rem}
+  .box{max-width:520px;padding:32px;background:#15151d;border:1px solid #23232e;border-radius:14px;margin:20px;text-align:center}
+  h1{font-size:1.3rem;margin:.2em 0}
+  .muted{color:#9a9aa6;font-size:.95rem}
+  .spin{width:26px;height:26px;border:3px solid #2a2a36;border-top-color:#fe2c55;border-radius:50%;margin:8px auto 16px;animation:sp 1s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  a{color:#ff6b8a}
 </style>
 </head>
 <body>
 <div class="box">
-  <h1 id="title">Authorization received ✓</h1>
-  <p class="muted">Copy the value below and send it back to complete the setup. This code is short-lived.</p>
-  <code id="code">reading…</code>
-  <button onclick="copyCode()">Copy code</button>
-  <p class="muted" id="state"></p>
+  <div class="spin" id="spin"></div>
+  <h1 id="title">Connecting your TikTok account…</h1>
+  <p class="muted" id="msg">Finalizing the authorization.</p>
 </div>
 <script>
-  var p = new URLSearchParams(location.search);
-  var code = p.get('code');
-  var err = p.get('error') || p.get('error_description');
-  var el = document.getElementById('code');
-  if (code) { el.textContent = code; }
-  else if (err) { document.getElementById('title').textContent = 'Authorization error'; el.textContent = err; }
-  else { el.textContent = 'No authorization code found in the URL.'; }
-  var st = p.get('state'); if (st) document.getElementById('state').textContent = 'state: ' + st;
-  function copyCode(){ navigator.clipboard.writeText(el.textContent); }
+  var BACKEND="https://script.google.com/macros/s/AKfycbwRZBEsTvg4DX_PJISGQwtLoDAfDOjZo95yw86nbnI2JcwIBvlarvLw4CRQ6BOT6fPdzg/exec";
+  function rand(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
+  function jsonp(url){return new Promise(function(res,rej){
+    var n="cb_"+rand(); window[n]=function(d){res(d);};
+    var s=document.createElement("script");
+    s.src=url+(url.indexOf("?")<0?"?":"&")+"callback="+n;
+    s.onerror=function(){rej(new Error("network"));};
+    document.body.appendChild(s);
+  });}
+  function fail(t,m){document.getElementById("spin").style.display="none";document.getElementById("title").textContent=t;document.getElementById("msg").innerHTML=m+' · <a href="dashboard.html">Back to dashboard</a>';}
+  var p=new URLSearchParams(location.search);
+  var code=p.get("code"), err=p.get("error")||p.get("error_description");
+  if(err){ fail("Authorization error", err); }
+  else if(code){
+    jsonp(BACKEND+"?action=ttauth&code="+encodeURIComponent(code))
+      .then(function(d){ if(d&&d.ok){ location.href="dashboard.html?connected=1"; } else { fail("Connection error", (d&&d.error)||"unknown"); } })
+      .catch(function(e){ fail("Connection error", String(e)); });
+  } else { fail("Nothing to do", "No authorization code found."); }
 </script>
 </body>
 </html>

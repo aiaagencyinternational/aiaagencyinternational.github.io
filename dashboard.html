@@ -16,11 +16,11 @@
   .card h2{font-size:1.05rem;margin:0 0 6px}
   .muted{color:#9a9aa6;font-size:.92rem}
   button,.btn{font:inherit;border:0;border-radius:10px;padding:11px 18px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+  button:disabled{opacity:.5;cursor:default}
   .tt{background:#fe2c55;color:#fff}
-  .ghost{background:#23232e;color:#e9e9ee}
   .row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
   .vid{width:120px;height:200px;border-radius:10px;background:linear-gradient(160deg,#ff2d55,#8a2be2,#3a2bd0);display:flex;align-items:center;justify-content:center;font-size:34px;flex:0 0 auto}
-  input,textarea{width:100%;background:#0b0b0f;border:1px solid #2a2a36;border-radius:8px;color:#e9e9ee;padding:10px;font:inherit;margin-top:6px}
+  textarea{width:100%;background:#0b0b0f;border:1px solid #2a2a36;border-radius:8px;color:#e9e9ee;padding:10px;font:inherit;margin-top:6px}
   .pill{display:inline-block;background:#23232e;border-radius:999px;padding:3px 10px;font-size:.8rem;color:#b9b9c4}
   #status{margin-top:12px;font-size:.92rem}
   .ok{color:#8affc1}.err{color:#ff9d9d}
@@ -34,7 +34,7 @@
     <h1>AIA Studios <span class="muted" style="font-weight:400">· Dashboard</span></h1>
   </header>
 
-  <div class="card" id="connectCard">
+  <div class="card">
     <h2>1 · Connect your TikTok account</h2>
     <p class="muted">Authorize AIA Studios to publish your own videos to your own TikTok account. You can revoke access anytime in TikTok settings.</p>
     <div class="row" style="margin-top:12px">
@@ -65,37 +65,41 @@
 </div>
 
 <script>
-  // ==== Config (filled once the TikTok app credentials are wired) ====
   var CFG = {
-    CLIENT_KEY: "REPLACE_CLIENT_KEY",
+    CLIENT_KEY: "awgyok4c6a4y0muy",
     REDIRECT_URI: "https://aiaagencyinternational.github.io/callback.html",
-    BACKEND: "REPLACE_BACKEND_EXEC_URL",   // Apps Script /exec (OAuth exchange + posting)
+    BACKEND: "https://script.google.com/macros/s/AKfycbwRZBEsTvg4DX_PJISGQwtLoDAfDOjZo95yw86nbnI2JcwIBvlarvLw4CRQ6BOT6fPdzg/exec",
     SCOPES: "user.info.basic,video.publish,video.upload"
   };
   function rand(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
   function login(){
-    var state = rand(); sessionStorage.setItem("tt_state", state);
-    var u = "https://www.tiktok.com/v2/auth/authorize/?client_key="+encodeURIComponent(CFG.CLIENT_KEY)
-      +"&scope="+encodeURIComponent(CFG.SCOPES)+"&response_type=code"
-      +"&redirect_uri="+encodeURIComponent(CFG.REDIRECT_URI)+"&state="+state;
-    location.href = u;
+    var state=rand(); try{sessionStorage.setItem("tt_state",state);}catch(e){}
+    location.href="https://www.tiktok.com/v2/auth/authorize/?client_key="+encodeURIComponent(CFG.CLIENT_KEY)
+      +"&scope="+encodeURIComponent(CFG.SCOPES)+"&response_type=code&redirect_uri="
+      +encodeURIComponent(CFG.REDIRECT_URI)+"&state="+state;
   }
-  // After callback, we return with ?connected=1&user=<name>
-  var p = new URLSearchParams(location.search);
-  if (p.get("connected")) {
-    document.getElementById("connState").textContent = "Connected" + (p.get("user")?(" · @"+p.get("user")):"");
-    document.getElementById("connState").className = "pill ok";
-    document.getElementById("loginBtn").textContent = "Reconnect";
-    document.getElementById("postCard").style.opacity = "1";
-    document.getElementById("postBtn").disabled = false;
+  function jsonp(url){return new Promise(function(res,rej){
+    var name="cb_"+rand(); window[name]=function(d){res(d);try{delete window[name];}catch(e){}};
+    var sc=document.createElement("script");
+    sc.src=url+(url.indexOf("?")<0?"?":"&")+"callback="+name;
+    sc.onerror=function(){rej(new Error("network"));};
+    document.body.appendChild(sc);
+  });}
+  var p=new URLSearchParams(location.search);
+  if(p.get("connected")){
+    var cs=document.getElementById("connState");
+    cs.textContent="Connected"; cs.className="pill ok";
+    document.getElementById("loginBtn").textContent="Reconnect";
+    document.getElementById("postCard").style.opacity="1";
+    document.getElementById("postBtn").disabled=false;
   }
   function publish(){
-    var s = document.getElementById("status");
-    s.textContent = "Publishing to TikTok…"; s.className = "";
-    fetch(CFG.BACKEND + "?action=ttpost&caption=" + encodeURIComponent(document.getElementById("caption").value))
-      .then(function(r){return r.json();})
-      .then(function(d){ s.textContent = d.ok ? "✓ Published to your TikTok account." : ("Error: "+(d.error||"unknown")); s.className = d.ok?"ok":"err"; })
-      .catch(function(e){ s.textContent = "Error: "+e; s.className="err"; });
+    var s=document.getElementById("status");
+    s.textContent="Publishing to TikTok…"; s.className="";
+    document.getElementById("postBtn").disabled=true;
+    jsonp(CFG.BACKEND+"?action=ttpost&caption="+encodeURIComponent(document.getElementById("caption").value))
+      .then(function(d){ s.textContent=d.ok?"✓ Published to your TikTok account.":("Error: "+(d.error||"unknown")); s.className=d.ok?"ok":"err"; document.getElementById("postBtn").disabled=false; })
+      .catch(function(e){ s.textContent="Error: "+e; s.className="err"; document.getElementById("postBtn").disabled=false; });
   }
 </script>
 </body>
