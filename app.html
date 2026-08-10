@@ -10,188 +10,281 @@
   :root{color-scheme:dark}
   *{box-sizing:border-box}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#0b0b0f;color:#e9e9ee;line-height:1.6}
-  a{color:#ff6b8a;text-decoration:none}
+  a{color:#ff6b8a;text-decoration:none;cursor:pointer}
+  code{background:#22222c;padding:1px 6px;border-radius:5px;font-size:.9em}
   /* Login */
   #login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-  .card{background:#15151d;border:1px solid #23232e;border-radius:16px;padding:32px;max-width:400px;width:100%}
-  .brand{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .card{background:#15151d;border:1px solid #23232e;border-radius:16px;padding:30px;max-width:400px;width:100%}
+  .brand{display:flex;align-items:center;gap:10px}
   .brand img{width:34px;height:34px;border-radius:8px}
-  .brand b{font-size:1.1rem}
-  label{display:block;font-size:.85rem;color:#9a9aa6;margin:14px 0 5px}
+  .brand b{font-size:1.08rem}
+  label{display:block;font-size:.84rem;color:#9a9aa6;margin:14px 0 5px}
   input{width:100%;background:#0b0b0f;border:1px solid #2a2a36;border-radius:9px;color:#e9e9ee;padding:11px;font:inherit}
+  input:focus{outline:none;border-color:#8a2be2}
   .btn{width:100%;margin-top:18px;background:linear-gradient(135deg,#ff2d55,#8a2be2);color:#fff;font-weight:700;border:0;border-radius:10px;padding:12px;font:inherit;cursor:pointer}
+  .btn.sm{width:auto;margin:0;padding:8px 16px;font-size:.88rem}
+  .btn.ghost{background:#22222c;color:#e9e9ee}
   .hint{margin-top:16px;padding:12px;background:#1a1a24;border:1px dashed #33333f;border-radius:9px;font-size:.82rem;color:#9a9aa6}
   .err{color:#ff9d9d;font-size:.86rem;margin-top:10px;min-height:1.2em}
-  /* App */
+  /* App shell */
   #app{display:none}
-  .top{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid #1c1c26;background:rgba(11,11,15,.95);position:sticky;top:0;z-index:5}
+  .demo{background:#3a2410;border-bottom:1px solid #6b4318;color:#ffc98a;padding:7px 16px;font-size:.85rem;text-align:center}
+  .top{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid #1c1c26;position:sticky;top:0;background:#0b0b0f;z-index:5}
   .top .sp{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:.9rem;color:#9a9aa6}
-  .demo{background:#3a2410;border:1px solid #6b4318;color:#ffc98a;padding:7px 16px;font-size:.85rem;text-align:center}
-  .wrap{display:flex;min-height:calc(100vh - 90px)}
-  nav.side{width:190px;border-right:1px solid #1c1c26;padding:16px 10px;flex:0 0 auto}
-  nav.side a{display:block;padding:9px 12px;border-radius:8px;color:#b9b9c4;font-size:.93rem;margin-bottom:3px;cursor:pointer}
+  .wrap{display:flex;min-height:calc(100vh - 92px)}
+  nav.side{width:196px;border-right:1px solid #1c1c26;padding:16px 10px;flex:0 0 auto}
+  nav.side a{display:block;padding:9px 12px;border-radius:8px;color:#b9b9c4;font-size:.93rem;margin-bottom:3px}
+  nav.side a:hover{background:#16161e}
   nav.side a.on{background:#1c1c26;color:#fff;font-weight:600}
   main{flex:1;padding:24px;min-width:0}
   h1{font-size:1.35rem;margin:0 0 4px}
   .sub{color:#9a9aa6;font-size:.92rem;margin:0 0 22px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:22px}
   .stat{background:#15151d;border:1px solid #23232e;border-radius:12px;padding:16px}
   .stat .k{color:#9a9aa6;font-size:.8rem}
   .stat .v{font-size:1.5rem;font-weight:800;margin-top:2px}
   .stat .d{font-size:.8rem;color:#8affc1}
+  .stat .d.warn{color:#ffc98a}
+  .panel{background:#15151d;border:1px solid #23232e;border-radius:12px;padding:18px;margin-bottom:16px;overflow-x:auto}
+  .panel h3{margin:0 0 12px;font-size:1rem}
   table{width:100%;border-collapse:collapse;font-size:.9rem}
-  th{text-align:left;color:#9a9aa6;font-weight:600;font-size:.8rem;padding:8px 10px;border-bottom:1px solid #23232e}
-  td{padding:10px;border-bottom:1px solid #191921}
-  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.76rem;background:#1c1c26;color:#b9b9c4}
+  th{text-align:left;color:#9a9aa6;font-weight:600;font-size:.79rem;padding:8px 10px;border-bottom:1px solid #23232e;white-space:nowrap}
+  td{padding:10px;border-bottom:1px solid #191921;vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.76rem;background:#1c1c26;color:#b9b9c4;white-space:nowrap}
   .pill.ok{background:#12301f;color:#8affc1}
   .pill.q{background:#2a2410;color:#ffd79a}
-  .bar{height:7px;border-radius:4px;background:linear-gradient(90deg,#ff2d55,#8a2be2)}
-  .panel{background:#15151d;border:1px solid #23232e;border-radius:12px;padding:18px;margin-bottom:16px;overflow-x:auto}
-  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;min-width:560px}
-  .cal .d{background:#15151d;border:1px solid #23232e;border-radius:9px;padding:8px;min-height:74px;font-size:.75rem}
-  .cal .d b{color:#9a9aa6;font-weight:600}
-  .chip{display:block;margin-top:4px;padding:2px 5px;border-radius:5px;background:#241a2e;color:#d8b4fe;font-size:.68rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar{height:6px;border-radius:4px;background:linear-gradient(90deg,#ff2d55,#8a2be2);margin-top:5px}
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;min-width:600px}
+  .cal .d{background:#15151d;border:1px solid #23232e;border-radius:9px;padding:8px;min-height:88px;font-size:.75rem}
+  .cal .d b{color:#9a9aa6;font-weight:600;display:block;margin-bottom:4px}
+  .chip{display:block;margin-top:3px;padding:3px 6px;border-radius:5px;background:#241a2e;color:#d8b4fe;font-size:.68rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .chip.r{background:#2e1a24;color:#ffb4c8}
-  .acc{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #191921}
-  .dot{width:9px;height:9px;border-radius:50%;background:#8affc1}
+  .acc{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #191921}
+  .acc:last-child{border-bottom:0}
+  .dot{width:9px;height:9px;border-radius:50%;background:#8affc1;flex:0 0 auto}
+  .dot.off{background:#3a3a48}
   .muted{color:#71717d;font-size:.85rem}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1c1c26;border:1px solid #33333f;color:#e9e9ee;padding:11px 20px;border-radius:10px;font-size:.9rem;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20}
+  .toast.on{opacity:1}
   @media(max-width:640px){nav.side{display:none}main{padding:16px}}
 </style>
 </head>
 <body>
 
-<!-- ---------- Login ---------- -->
 <div id="login">
   <div class="card">
     <div class="brand"><img src="./apple-touch-icon.png" alt=""><b>AIA Studios</b></div>
-    <p class="sub" style="margin:0 0 4px">Sign in to your workspace</p>
+    <p class="sub" style="margin:8px 0 0">Sign in to your workspace</p>
     <label for="u">Email or username</label>
-    <input id="u" autocomplete="username" placeholder="you@example.com">
+    <input id="u" autocomplete="username" placeholder="you@example.com" value="demo">
     <label for="p">Password</label>
-    <input id="p" type="password" autocomplete="current-password" placeholder="••••••••">
-    <button class="btn" onclick="doLogin()">Sign in</button>
+    <input id="p" type="password" autocomplete="current-password" placeholder="Password">
+    <button class="btn" id="signin">Sign in</button>
     <div class="err" id="err"></div>
     <div class="hint"><b>Reviewer / demo access</b><br>
-      username <code>demo</code> · password <code>aiastudios-demo</code><br>
-      Opens a read-only workspace with sample data — no real accounts are touched.</div>
+      username <code>demo</code><br>password <code>aiastudios-demo</code><br>
+      Opens a read-only workspace with sample data. No live accounts are touched and publishing is disabled.</div>
   </div>
 </div>
 
-<!-- ---------- App ---------- -->
 <div id="app">
-  <div class="demo">🔍 <b>Demo workspace</b> — sample data, read-only. Publishing is disabled in this mode.</div>
+  <div class="demo">Demo workspace &mdash; sample data, read-only. Publishing is disabled in this mode.</div>
   <div class="top">
     <div class="brand"><img src="./apple-touch-icon.png" alt=""><b>AIA Studios</b></div>
-    <div class="sp"><span>Demo Workspace</span><a onclick="logout()">Sign out</a></div>
+    <div class="sp"><span id="who">Demo Workspace</span><a id="out">Sign out</a></div>
   </div>
   <div class="wrap">
-    <nav class="side">
-      <a class="on" onclick="go('dash',this)">Dashboard</a>
-      <a onclick="go('queue',this)">Content queue</a>
-      <a onclick="go('cal',this)">Calendar</a>
-      <a onclick="go('ana',this)">Analytics</a>
-      <a onclick="go('acc',this)">Accounts</a>
-      <a onclick="go('set',this)">Settings</a>
-    </nav>
+    <nav class="side" id="nav"></nav>
     <main id="view"></main>
   </div>
 </div>
+<div class="toast" id="toast"></div>
 
 <script>
-// --- simple client-side demo gate (no real accounts, no secrets involved) ---
-function doLogin(){
-  var u=document.getElementById('u').value.trim().toLowerCase();
-  var p=document.getElementById('p').value;
-  if((u==='demo'||u==='demo@aiastudios.app') && p==='aiastudios-demo'){
-    try{sessionStorage.setItem('aia_demo','1');}catch(e){}
-    show();
-  } else {
-    document.getElementById('err').textContent='Wrong credentials. Use the demo access shown below.';
-  }
-}
-function logout(){ try{sessionStorage.removeItem('aia_demo');}catch(e){} location.reload(); }
-function show(){
-  document.getElementById('login').style.display='none';
-  document.getElementById('app').style.display='block';
-  go('dash');
-}
-try{ if(sessionStorage.getItem('aia_demo')==='1') show(); }catch(e){}
+(function () {
+  "use strict";
+  var USER = "demo", PASS = "aiastudios-demo";
+  var $ = function (id) { return document.getElementById(id); };
 
-// --- sample data ---
-var QUEUE=[
-  ['sunrise_hike.mp4','Reel','TikTok · Instagram','Mon 15:07','scheduled'],
-  ['trail_interview.mp4','Reel','Instagram','Mon 20:14','scheduled'],
-  ['dolomites_set (6)','Carousel','Instagram','Mon 17:01','scheduled'],
-  ['summit_push.mp4','Reel','TikTok','Tue 15:03','scheduled'],
-  ['gear_checklist (4)','Carousel','Instagram','Tue 17:09','queued'],
-  ['alpine_lake.mp4','Reel','Instagram · TikTok','Wed 20:05','queued'],
-  ['ridge_walk.mp4','Reel','TikTok','Wed 15:12','queued']
-];
-var POSTS=[
-  ['sunrise over the valley','Reel',1745,1093,8.8,'+41'],
-  ['4am alarm hits different','Reel',1466,1177,4.9,'+28'],
-  ['the walk in is half the reason','Reel',608,497,2.2,'+9'],
-  ['peak 3/40 — forty switchbacks','Carousel',496,293,null,'+12'],
-  ['asked hikers how they are doing','Reel',585,480,7.1,'+18']
-];
-function el(h){var d=document.createElement('div');d.innerHTML=h;return d.firstElementChild;}
-function go(v,node){
-  if(node){[].forEach.call(document.querySelectorAll('nav.side a'),function(a){a.className='';});node.className='on';}
-  var m=document.getElementById('view'),h='';
-  if(v==='dash'){
-    h='<h1>Dashboard</h1><p class="sub">Last 7 days across your connected accounts.</p>'+
-      '<div class="grid">'+
-      '<div class="stat"><div class="k">Followers</div><div class="v">1,503</div><div class="d">+95 this week</div></div>'+
-      '<div class="stat"><div class="k">Posts published</div><div class="v">21</div><div class="d">100% on time</div></div>'+
-      '<div class="stat"><div class="k">Avg. watch time</div><div class="v">3.7s</div><div class="d" style="color:#ffc98a">target 6s</div></div>'+
-      '<div class="stat"><div class="k">Reach</div><div class="v">2,840</div><div class="d">+18%</div></div>'+
-      '</div>'+
-      '<div class="panel"><b>Upcoming</b><table><tr><th>File</th><th>Type</th><th>Channels</th><th>When</th><th></th></tr>'+
-      QUEUE.slice(0,4).map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td class="muted">'+r[2]+'</td><td>'+r[3]+'</td><td><span class="pill ok">'+r[4]+'</span></td></tr>';}).join('')+
-      '</table></div>';
-  } else if(v==='queue'){
-    h='<h1>Content queue</h1><p class="sub">Upload media, add a caption, pick a slot — or let auto-scheduling place it.</p>'+
-      '<div class="panel"><table><tr><th>File</th><th>Type</th><th>Channels</th><th>Scheduled</th><th>Status</th></tr>'+
-      QUEUE.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td class="muted">'+r[2]+'</td><td>'+r[3]+'</td><td><span class="pill '+(r[4]==='scheduled'?'ok':'q')+'">'+r[4]+'</span></td></tr>';}).join('')+
-      '</table></div><p class="muted">Failed uploads retry automatically; if a file cannot be processed the next queued item takes the slot.</p>';
-  } else if(v==='cal'){
-    var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],c='';
-    for(var i=0;i<7;i++){
-      c+='<div class="d"><b>'+days[i]+'</b>'+
-         '<span class="chip r">15:0'+((i*3)%9)+' Reel</span>'+
-         '<span class="chip">17:0'+((i*2)%9)+' Carousel</span>'+
-         '<span class="chip r">20:1'+(i%9)+' Reel</span></div>';
-    }
-    h='<h1>Calendar</h1><p class="sub">Slots are spread with a few minutes of natural variance instead of firing on the exact hour.</p><div class="panel"><div class="cal">'+c+'</div></div>';
-  } else if(v==='ana'){
-    h='<h1>Analytics</h1><p class="sub">Per-post performance, including watch time — the strongest reach signal for short video.</p>'+
-      '<div class="panel"><table><tr><th>Caption</th><th>Type</th><th>Views</th><th>Reach</th><th>Watch time</th><th>Follows</th></tr>'+
-      POSTS.map(function(r){
-        var w=r[4]==null?'<span class="muted">n/a</span>':(r[4]+'s');
-        var pct=Math.min(100,(r[2]/1800)*100);
-        return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2].toLocaleString()+'<div class="bar" style="width:'+pct+'%"></div></td><td>'+r[3].toLocaleString()+'</td><td>'+w+'</td><td style="color:#8affc1">'+r[5]+'</td></tr>';
-      }).join('')+'</table></div>'+
-      '<div class="panel"><b>Insight</b><p class="muted" style="margin:8px 0 0">Reels held past ~6 seconds reached roughly 2.5× the audience of shorter-held ones. Your current median is 3.7s — tightening the first two seconds is the highest-leverage change.</p></div>';
-  } else if(v==='acc'){
-    h='<h1>Accounts</h1><p class="sub">Connected via each platform\\'s official login. Revoke anytime in the platform settings.</p><div class="panel">'+
-      '<div class="acc"><span class="dot"></span><div><b>TikTok</b><div class="muted">@demo_creator · publish + insights</div></div><span class="pill ok" style="margin-left:auto">connected</span></div>'+
-      '<div class="acc"><span class="dot"></span><div><b>Instagram</b><div class="muted">@demo_creator · publish + insights</div></div><span class="pill ok" style="margin-left:auto">connected</span></div>'+
-      '<div class="acc"><span class="dot" style="background:#3a3a48"></span><div><b>Threads</b><div class="muted">not connected</div></div><span class="pill" style="margin-left:auto">connect</span></div>'+
-      '<div class="acc" style="border:0"><span class="dot" style="background:#3a3a48"></span><div><b>X</b><div class="muted">not connected</div></div><span class="pill" style="margin-left:auto">connect</span></div>'+
-      '</div><p class="muted">AIA Studios only publishes content you queued, only to accounts you authorized.</p>';
-  } else {
-    h='<h1>Settings</h1><p class="sub">Posting behaviour for this workspace.</p><div class="panel">'+
-      '<table><tr><th>Setting</th><th>Value</th></tr>'+
-      '<tr><td>Reels per day</td><td>2</td></tr>'+
-      '<tr><td>Carousels per day</td><td>1</td></tr>'+
-      '<tr><td>Preferred slots (UTC)</td><td>15:00 · 17:00 · 20:00</td></tr>'+
-      '<tr><td>Slot variance</td><td>up to 17 minutes</td></tr>'+
-      '<tr><td>AI content disclosure</td><td>TikTok AIGC label — on</td></tr>'+
-      '<tr><td>Auto-retry failed uploads</td><td>on</td></tr>'+
-      '</table></div><p class="muted">Demo workspace — settings are read-only here.</p>';
+  function toast(msg) {
+    var t = $("toast"); t.textContent = msg; t.className = "toast on";
+    setTimeout(function () { t.className = "toast"; }, 2200);
   }
-  m.innerHTML=h;
-}
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  // ---------- sample data ----------
+  var QUEUE = [
+    { file: "sunrise_hike.mp4",     type: "Reel",     ch: "TikTok, Instagram", when: "Mon 15:07", st: "scheduled" },
+    { file: "trail_interview.mp4",  type: "Reel",     ch: "Instagram",         when: "Mon 20:14", st: "scheduled" },
+    { file: "dolomites_set (6)",    type: "Carousel", ch: "Instagram",         when: "Mon 17:01", st: "scheduled" },
+    { file: "summit_push.mp4",      type: "Reel",     ch: "TikTok",            when: "Tue 15:03", st: "scheduled" },
+    { file: "gear_checklist (4)",   type: "Carousel", ch: "Instagram",         when: "Tue 17:09", st: "queued" },
+    { file: "alpine_lake.mp4",      type: "Reel",     ch: "Instagram, TikTok", when: "Wed 20:05", st: "queued" },
+    { file: "ridge_walk.mp4",       type: "Reel",     ch: "TikTok",            when: "Wed 15:12", st: "queued" }
+  ];
+  var POSTS = [
+    { cap: "sunrise over the valley",        type: "Reel",     views: 1745, reach: 1093, watch: 8.8, follows: 41 },
+    { cap: "4am alarm hits different",       type: "Reel",     views: 1466, reach: 1177, watch: 4.9, follows: 28 },
+    { cap: "asked hikers how they are doing",type: "Reel",     views: 585,  reach: 480,  watch: 7.1, follows: 18 },
+    { cap: "the walk in is half the reason", type: "Reel",     views: 608,  reach: 497,  watch: 2.2, follows: 9 },
+    { cap: "peak 3/40 — forty switchbacks",  type: "Carousel", views: 496,  reach: 293,  watch: null, follows: 12 }
+  ];
+  var ACCOUNTS = [
+    { name: "TikTok",    handle: "@demo_creator", scopes: "publish + insights", on: true },
+    { name: "Instagram", handle: "@demo_creator", scopes: "publish + insights", on: true },
+    { name: "Threads",   handle: "not connected", scopes: "", on: false },
+    { name: "X",         handle: "not connected", scopes: "", on: false }
+  ];
+  var PAGES = [
+    { id: "dash",  label: "Dashboard" },
+    { id: "queue", label: "Content queue" },
+    { id: "cal",   label: "Calendar" },
+    { id: "ana",   label: "Analytics" },
+    { id: "acc",   label: "Accounts" },
+    { id: "set",   label: "Settings" }
+  ];
+
+  // ---------- views ----------
+  function vDash() {
+    var rows = QUEUE.slice(0, 4).map(function (q) {
+      return "<tr><td>" + esc(q.file) + "</td><td>" + q.type + "</td><td class='muted'>" + q.ch +
+             "</td><td>" + q.when + "</td><td><span class='pill ok'>" + q.st + "</span></td></tr>";
+    }).join("");
+    return "<h1>Dashboard</h1><p class='sub'>Last 7 days across your connected accounts.</p>" +
+      "<div class='grid'>" +
+      stat("Followers", "1,503", "+95 this week") +
+      stat("Posts published", "21", "100% on time") +
+      stat("Avg. watch time", "3.7s", "target 6s", true) +
+      stat("Reach", "2,840", "+18%") +
+      "</div>" +
+      "<div class='panel'><h3>Next up</h3><table><tr><th>File</th><th>Type</th><th>Channels</th><th>When</th><th>Status</th></tr>" +
+      rows + "</table></div>" +
+      "<div class='panel'><h3>Health</h3><p class='muted' style='margin:0'>All scheduled slots delivered on time in the last 7 days. Failed uploads are retried automatically; if a file cannot be processed the next queued item takes its slot.</p></div>";
+  }
+  function stat(k, v, d, warn) {
+    return "<div class='stat'><div class='k'>" + k + "</div><div class='v'>" + v +
+           "</div><div class='d" + (warn ? " warn" : "") + "'>" + d + "</div></div>";
+  }
+  function vQueue() {
+    var rows = QUEUE.map(function (q, i) {
+      return "<tr><td>" + esc(q.file) + "</td><td>" + q.type + "</td><td class='muted'>" + q.ch +
+             "</td><td>" + q.when + "</td><td><span class='pill " + (q.st === "scheduled" ? "ok" : "q") + "'>" + q.st +
+             "</span></td><td><a data-act='preview' data-i='" + i + "'>preview</a></td></tr>";
+    }).join("");
+    return "<h1>Content queue</h1><p class='sub'>Upload media, add a caption, pick a slot &mdash; or let auto-scheduling place it.</p>" +
+      "<div class='panel'><div class='row' style='margin-bottom:14px'>" +
+      "<button class='btn sm' data-act='upload'>Upload media</button>" +
+      "<button class='btn sm ghost' data-act='autofill'>Auto-schedule queue</button>" +
+      "<span class='muted'>" + QUEUE.length + " items &middot; " + QUEUE.filter(function (q) { return q.st === "scheduled"; }).length + " scheduled</span>" +
+      "</div><table><tr><th>File</th><th>Type</th><th>Channels</th><th>Scheduled</th><th>Status</th><th></th></tr>" + rows + "</table></div>";
+  }
+  function vCal() {
+    var days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], c = "";
+    for (var i = 0; i < 7; i++) {
+      c += "<div class='d'><b>" + days[i] + "</b>" +
+           "<span class='chip r'>15:0" + ((i * 3) % 9) + " Reel</span>" +
+           "<span class='chip'>17:0" + ((i * 2) % 9) + " Carousel</span>" +
+           "<span class='chip r'>20:1" + (i % 9) + " Reel</span></div>";
+    }
+    return "<h1>Calendar</h1><p class='sub'>Two reels and one carousel per day. Slots carry a few minutes of natural variance instead of firing on the exact hour.</p>" +
+      "<div class='panel'><div class='cal'>" + c + "</div></div>";
+  }
+  function vAna() {
+    var rows = POSTS.map(function (p) {
+      var w = p.watch == null ? "<span class='muted'>n/a</span>" : (p.watch + "s");
+      var pct = Math.min(100, (p.views / 1800) * 100);
+      return "<tr><td>" + esc(p.cap) + "</td><td>" + p.type + "</td><td>" + p.views.toLocaleString() +
+             "<div class='bar' style='width:" + pct + "%'></div></td><td>" + p.reach.toLocaleString() +
+             "</td><td>" + w + "</td><td style='color:#8affc1'>+" + p.follows + "</td></tr>";
+    }).join("");
+    return "<h1>Analytics</h1><p class='sub'>Per-post performance including watch time &mdash; the strongest reach signal for short video.</p>" +
+      "<div class='panel'><table><tr><th>Caption</th><th>Type</th><th>Views</th><th>Reach</th><th>Watch time</th><th>Follows</th></tr>" + rows + "</table></div>" +
+      "<div class='panel'><h3>Insight</h3><p class='muted' style='margin:0'>Reels held past roughly 6 seconds reached about 2.5&times; the audience of shorter-held ones. The current median is 3.7s, so tightening the first two seconds is the highest-leverage change available.</p></div>";
+  }
+  function vAcc() {
+    var rows = ACCOUNTS.map(function (a, i) {
+      return "<div class='acc'><span class='dot" + (a.on ? "" : " off") + "'></span><div><b>" + a.name + "</b>" +
+             "<div class='muted'>" + a.handle + (a.scopes ? " &middot; " + a.scopes : "") + "</div></div>" +
+             "<span style='margin-left:auto'>" + (a.on
+               ? "<span class='pill ok'>connected</span>"
+               : "<a data-act='connect' data-i='" + i + "'><span class='pill'>connect</span></a>") + "</span></div>";
+    }).join("");
+    return "<h1>Accounts</h1><p class='sub'>Connected through each platform official login. You can revoke access at any time in the platform settings.</p>" +
+      "<div class='panel'>" + rows + "</div>" +
+      "<p class='muted'>AIA Studios publishes only content you queued, and only to accounts you authorized.</p>";
+  }
+  function vSet() {
+    return "<h1>Settings</h1><p class='sub'>Posting behaviour for this workspace.</p>" +
+      "<div class='panel'><table>" +
+      "<tr><th>Setting</th><th>Value</th></tr>" +
+      "<tr><td>Reels per day</td><td>2</td></tr>" +
+      "<tr><td>Carousels per day</td><td>1</td></tr>" +
+      "<tr><td>Preferred slots (UTC)</td><td>15:00, 17:00, 20:00</td></tr>" +
+      "<tr><td>Slot variance</td><td>up to 17 minutes</td></tr>" +
+      "<tr><td>AI content disclosure</td><td>TikTok AIGC label &mdash; on</td></tr>" +
+      "<tr><td>Auto-retry failed uploads</td><td>on</td></tr>" +
+      "</table></div><p class='muted'>Demo workspace &mdash; settings are read-only here.</p>";
+  }
+  var VIEWS = { dash: vDash, queue: vQueue, cal: vCal, ana: vAna, acc: vAcc, set: vSet };
+
+  function render(id) {
+    var fn = VIEWS[id] || vDash;
+    $("view").innerHTML = fn();
+    var links = $("nav").getElementsByTagName("a");
+    for (var i = 0; i < links.length; i++) {
+      links[i].className = (links[i].getAttribute("data-p") === id) ? "on" : "";
+    }
+    window.scrollTo(0, 0);
+  }
+  function buildNav() {
+    $("nav").innerHTML = PAGES.map(function (p) {
+      return "<a data-p='" + p.id + "'>" + p.label + "</a>";
+    }).join("");
+    $("nav").addEventListener("click", function (e) {
+      var a = e.target.closest("a[data-p]");
+      if (a) render(a.getAttribute("data-p"));
+    });
+  }
+  // demo actions
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-act]");
+    if (!t) return;
+    var act = t.getAttribute("data-act");
+    if (act === "upload") toast("Demo workspace: uploading is disabled.");
+    else if (act === "autofill") toast("Auto-scheduling is read-only in the demo.");
+    else if (act === "preview") toast("Preview: " + QUEUE[t.getAttribute("data-i")].file);
+    else if (act === "connect") toast("Connecting accounts is disabled in the demo.");
+  });
+
+  function enter() {
+    $("login").style.display = "none";
+    $("app").style.display = "block";
+    buildNav();
+    render("dash");
+  }
+  function attempt() {
+    var u = $("u").value.trim().toLowerCase();
+    var p = $("p").value.trim();
+    if ((u === USER || u === "demo@aiastudios.app") && p === PASS) {
+      try { sessionStorage.setItem("aia_demo", "1"); } catch (err) {}
+      enter();
+    } else {
+      $("err").textContent = "Wrong credentials — use the demo access shown below.";
+    }
+  }
+  $("signin").addEventListener("click", attempt);
+  $("p").addEventListener("keydown", function (e) { if (e.key === "Enter") attempt(); });
+  $("u").addEventListener("keydown", function (e) { if (e.key === "Enter") attempt(); });
+  $("out").addEventListener("click", function () {
+    try { sessionStorage.removeItem("aia_demo"); } catch (err) {}
+    location.reload();
+  });
+  try { if (sessionStorage.getItem("aia_demo") === "1") enter(); } catch (err) {}
+})();
 </script>
 </body>
 </html>
