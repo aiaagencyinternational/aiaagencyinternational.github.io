@@ -37,6 +37,8 @@
   .field{margin-top:18px}
   .field > label{display:block;font-size:.86rem;color:#b9b9c4;font-weight:600;margin-bottom:2px}
   .check{display:flex;align-items:flex-start;gap:10px;padding:8px 0;font-size:.93rem}
+  /* .field > label setzt display:block und wuerde das Flex-Layout der Checkboxen kippen. */
+  .field > label.check{display:flex}
   .check input{margin:4px 0 0;width:16px;height:16px;flex:0 0 auto;accent-color:#fe2c55}
   .check.dis{opacity:.45}
   .check .cd{font-size:.8rem;color:#71717d;display:block}
