@@ -210,14 +210,17 @@
       return "<div class='acc'><span class='dot" + (a.on ? "" : " off") + "'></span><div><b>" + a.name + "</b>" +
              "<div class='muted'>" + a.handle + (a.scopes ? " &middot; " + a.scopes : "") + "</div></div>" +
              "<span style='margin-left:auto'>" + (a.on
-               ? "<span class='pill ok'>connected</span>"
+               ? "<span class='pill ok'>connected &middot; sample</span>"
                : "<a data-act='connect' data-i='" + i + "'><span class='pill'>connect</span></a>") + "</span></div>";
     }).join("");
-    return "<h1>Accounts</h1><p class='sub'>Connected through each platform official login. You can revoke access at any time in the platform settings.</p>" +
-      "<div class='panel'>" + rows + "</div>" +
-      "<div class='panel'><h3>Connect a live TikTok account</h3>" +
-      "<p class='muted' style='margin:0 0 12px'>The accounts above are demo data. To run the real TikTok flow &mdash; official TikTok login, " +
-      "then choose caption, audience, interaction settings and content disclosure before posting &mdash; open the live connect page.</p>" +
+    return "<h1>Accounts</h1><p class='sub'>In a live workspace each account is connected through the platform own official login, and access can be revoked there at any time.</p>" +
+      "<div class='panel'><h3>Sample accounts in this demo workspace</h3>" +
+      "<p class='muted' style='margin:0 0 6px'>These four rows are placeholder data so the screen has something to show. " +
+      "No real account is connected here &mdash; that is why the live page below reports &ldquo;Not connected&rdquo;.</p>" +
+      rows + "</div>" +
+      "<div class='panel'><h3>Connect a real TikTok account</h3>" +
+      "<p class='muted' style='margin:0 0 12px'>This is the live flow, not a demo: official TikTok login, then caption, audience, " +
+      "interaction settings and content disclosure before anything is posted.</p>" +
       "<a class='btn sm' href='./dashboard.html'>Open TikTok connect &amp; post</a></div>" +
       "<p class='muted'>AIA Studios publishes only content you queued, and only to accounts you authorized.</p>";
   }
