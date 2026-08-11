@@ -321,6 +321,27 @@
     }, 4000);
   }
 
+  // TikTok-Fehlercodes in verstaendliche Hinweise uebersetzen. Die Rohmeldung nennt nur
+  // den Code und verlinkt die Guidelines - das hilft dem Nutzer nicht weiter.
+  var ERR_HINT = [
+    [/unaudited_client_can_only_post_to_private_accounts/,
+     "This app has not been audited by TikTok yet. Until it is, videos can only be posted as “Only you”, and the TikTok account must be set to private. Choose “Only you” above and post again."],
+    [/reached_active_user_cap/,
+     "TikTok limits unaudited apps to 5 posting users per 24 hours. Try again later."],
+    [/spam_risk_too_many_posts/,
+     "TikTok’s daily post limit for this account is reached. Try again tomorrow."],
+    [/spam_risk_user_banned_from_posting/,
+     "TikTok has blocked posting for this account. Check the account status in the TikTok app."],
+    [/privacy_level_option_mismatch/,
+     "The selected visibility is not available for this account. Pick another option above."],
+    [/file_format_check_failed|video_pull_failed/,
+     "TikTok could not process the video file. Try a different video."]
+  ];
+  function humanError(raw) {
+    for (var i = 0; i < ERR_HINT.length; i++) if (ERR_HINT[i][0].test(raw)) return ERR_HINT[i][1];
+    return "Error: " + raw;
+  }
+
   $("postBtn").addEventListener("click", function () {
     var s = $("status");
     s.textContent = "Sending to TikTok…"; s.className = "";
@@ -339,7 +360,7 @@
         s.textContent = "Sent to TikTok. Waiting for processing…"; s.className = "";
         pollStatus(d.publish_id, 12);
       } else {
-        s.textContent = "Error: " + ((d && d.error) || "unknown"); s.className = "err";
+        s.textContent = humanError((d && d.error) || "unknown"); s.className = "err";
       }
       refresh();
     }).catch(function (e) {
