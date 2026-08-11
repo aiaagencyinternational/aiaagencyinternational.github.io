@@ -186,12 +186,23 @@
       "&scope=" + encodeURIComponent(CFG.SCOPES) + "&response_type=code&redirect_uri=" +
       encodeURIComponent(CFG.REDIRECT_URI) + "&state=" + state;
   }
+  // Der Apps-Script-Endpunkt antwortet gelegentlich mit einer Drive-Fehlerseite
+  // (beobachtet: ~1 von 3 Aufrufen). Ohne Retry fiele der Login still auf den
+  // hartcodierten Key zurueck - nach dem Approval waere das der falsche.
+  function fetchKey(tries) {
+    return jsonp(CFG.BACKEND + "?action=ttkey").then(function (d) {
+      if (d && d.client_key) return d.client_key;
+      if (tries > 1) return fetchKey(tries - 1);
+      return CFG.CLIENT_KEY;
+    }).catch(function () {
+      if (tries > 1) return fetchKey(tries - 1);
+      return CFG.CLIENT_KEY;
+    });
+  }
   $("loginBtn").addEventListener("click", function () {
     var btn = $("loginBtn");
     btn.disabled = true; btn.textContent = "Connecting…";
-    jsonp(CFG.BACKEND + "?action=ttkey")
-      .then(function (d) { startAuth((d && d.client_key) ? d.client_key : CFG.CLIENT_KEY); })
-      .catch(function () { startAuth(CFG.CLIENT_KEY); });
+    fetchKey(3).then(startAuth);
   });
 
   // --- Creator info -------------------------------------------------------
