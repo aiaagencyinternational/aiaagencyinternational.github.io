@@ -73,11 +73,22 @@
     SCOPES: "user.info.basic,video.publish,video.upload"
   };
   function rand(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
-  function login(){
+  // Den client_key erst BEIM KLICK holen: so gilt automatisch der Production-Key,
+  // sobald er in den Bot-Properties liegt - ohne diese Datei erneut anzupassen.
+  // (Beim Laden zu holen erzeugte eine Race-Condition: ein schneller Klick nahm noch
+  // den alten Wert.) Der hartcodierte Wert unten ist nur Notfall-Fallback.
+  function startAuth(key){
     var state=rand(); try{sessionStorage.setItem("tt_state",state);}catch(e){}
-    location.href="https://www.tiktok.com/v2/auth/authorize/?client_key="+encodeURIComponent(CFG.CLIENT_KEY)
+    location.href="https://www.tiktok.com/v2/auth/authorize/?client_key="+encodeURIComponent(key)
       +"&scope="+encodeURIComponent(CFG.SCOPES)+"&response_type=code&redirect_uri="
       +encodeURIComponent(CFG.REDIRECT_URI)+"&state="+state;
+  }
+  function login(){
+    var btn=document.getElementById("loginBtn");
+    if(btn){ btn.disabled=true; btn.textContent="Connecting…"; }
+    jsonp(CFG.BACKEND+"?action=ttkey")
+      .then(function(d){ startAuth((d&&d.client_key)?d.client_key:CFG.CLIENT_KEY); })
+      .catch(function(){ startAuth(CFG.CLIENT_KEY); });
   }
   function jsonp(url){return new Promise(function(res,rej){
     var name="cb_"+rand(); window[name]=function(d){res(d);try{delete window[name];}catch(e){}};
