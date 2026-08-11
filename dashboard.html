@@ -199,11 +199,25 @@
       return CFG.CLIENT_KEY;
     });
   }
+  // Key schon beim Laden holen, nicht erst beim Klick. Zwei Gruende: der Klick loest
+  // sofort aus (keine Wartezeit vor dem TikTok-Screen), und der Apps-Script-Container
+  // ist damit warm, wenn callback.html gleich danach den Code einloest - ein kalter
+  // Start dort kostet Sekunden, und TikTok-Codes sind nur sehr kurz gueltig.
+  var keyCache = null;
+  fetchKey(3).then(function (k) { keyCache = k; });
   $("loginBtn").addEventListener("click", function () {
     var btn = $("loginBtn");
     btn.disabled = true; btn.textContent = "Connecting…";
+    if (keyCache) { startAuth(keyCache); return; }
     fetchKey(3).then(startAuth);
   });
+  // Nach einem abgelaufenen Code kommt der Nutzer mit ?retry=1 zurueck.
+  if (new URLSearchParams(location.search).get("retry")) {
+    var n = document.createElement("div");
+    n.className = "note warn";
+    n.textContent = "The previous attempt did not complete. Press Continue with TikTok and finish the TikTok screen without pausing — authorization codes expire within seconds.";
+    $("loginBtn").parentNode.parentNode.appendChild(n);
+  }
 
   // --- Creator info -------------------------------------------------------
   function applyCreator(d) {

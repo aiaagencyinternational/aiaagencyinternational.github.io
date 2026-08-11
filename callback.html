@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/png" href="./favicon.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <title>Connecting… — AIA Studios</title>
 <style>
   :root{color-scheme:dark}
@@ -15,6 +16,8 @@
   .spin{width:26px;height:26px;border:3px solid #2a2a36;border-top-color:#fe2c55;border-radius:50%;margin:8px auto 16px;animation:sp 1s linear infinite}
   @keyframes sp{to{transform:rotate(360deg)}}
   a{color:#ff6b8a}
+  .btn{display:inline-block;margin-top:18px;background:#fe2c55;color:#fff;font-weight:700;border-radius:10px;padding:11px 20px;text-decoration:none}
+  .det{margin-top:14px;font-size:.82rem;color:#71717d}
 </style>
 </head>
 <body>
@@ -22,26 +25,95 @@
   <div class="spin" id="spin"></div>
   <h1 id="title">Connecting your TikTok account…</h1>
   <p class="muted" id="msg">Finalizing the authorization.</p>
+  <div id="extra"></div>
 </div>
 <script>
-  var BACKEND="https://script.google.com/macros/s/AKfycbwRZBEsTvg4DX_PJISGQwtLoDAfDOjZo95yw86nbnI2JcwIBvlarvLw4CRQ6BOT6fPdzg/exec";
-  function rand(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
-  function jsonp(url){return new Promise(function(res,rej){
-    var n="cb_"+rand(); window[n]=function(d){res(d);};
-    var s=document.createElement("script");
-    s.src=url+(url.indexOf("?")<0?"?":"&")+"callback="+n;
-    s.onerror=function(){rej(new Error("network"));};
-    document.body.appendChild(s);
-  });}
-  function fail(t,m){document.getElementById("spin").style.display="none";document.getElementById("title").textContent=t;document.getElementById("msg").innerHTML=m+' · <a href="dashboard.html">Back to dashboard</a>';}
-  var p=new URLSearchParams(location.search);
-  var code=p.get("code"), err=p.get("error")||p.get("error_description");
-  if(err){ fail("Authorization error", err); }
-  else if(code){
-    jsonp(BACKEND+"?action=ttauth&code="+encodeURIComponent(code))
-      .then(function(d){ if(d&&d.ok){ location.href="dashboard.html?connected=1"; } else { fail("Connection error", (d&&d.error)||"unknown"); } })
-      .catch(function(e){ fail("Connection error", String(e)); });
-  } else { fail("Nothing to do", "No authorization code found."); }
+(function () {
+  "use strict";
+  var BACKEND = "https://script.google.com/macros/s/AKfycbwRZBEsTvg4DX_PJISGQwtLoDAfDOjZo95yw86nbnI2JcwIBvlarvLw4CRQ6BOT6fPdzg/exec";
+  var $ = function (id) { return document.getElementById(id); };
+
+  function rand() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+
+  function jsonp(url) {
+    return new Promise(function (res, rej) {
+      var n = "cb_" + rand();
+      // Der Apps-Script-Endpunkt liefert sporadisch eine Google-Fehlerseite statt JSONP.
+      // Die wird als Script geladen und ruft unseren Callback nie auf -> ohne Timeout
+      // haengt die Seite ewig im Spinner.
+      var to = setTimeout(function () { rej(new Error("no response from server")); }, 45000);
+      window[n] = function (d) { clearTimeout(to); res(d); try { delete window[n]; } catch (e) {} };
+      var s = document.createElement("script");
+      s.src = url + (url.indexOf("?") < 0 ? "?" : "&") + "callback=" + n;
+      s.onerror = function () { clearTimeout(to); rej(new Error("network error")); };
+      document.body.appendChild(s);
+    });
+  }
+
+  function show(title, msg, retry, detail) {
+    $("spin").style.display = "none";
+    $("title").textContent = title;
+    $("msg").textContent = msg;
+    var h = "";
+    if (retry) h += '<a class="btn" href="dashboard.html?retry=1">Try again</a>';
+    else h += '<a class="btn" href="dashboard.html">Back to dashboard</a>';
+    if (detail) h += '<div class="det">' + detail + "</div>";
+    $("extra").innerHTML = h;
+  }
+
+  var p = new URLSearchParams(location.search);
+  var code = p.get("code");
+  var state = p.get("state");
+  var err = p.get("error_description") || p.get("error");
+
+  // Den Code SOFORT aus der Adresszeile entfernen. TikTok-Codes sind einmalig: bliebe er
+  // stehen, wuerde ein Reload oder ein Zurueck-Klick denselben, schon verbrauchten Code
+  // erneut einloesen - genau das erzeugt die Meldung "Authorization code is expired".
+  try { history.replaceState({}, "", location.pathname); } catch (e) {}
+
+  if (err) {
+    show("Authorization error", err, true);
+    return;
+  }
+  if (!code) {
+    show("Nothing to do", "No authorization code was returned. Start the connection from the dashboard.", true);
+    return;
+  }
+
+  // CSRF-Schutz: den state gegen den beim Start hinterlegten Wert pruefen. Fehlt der
+  // gespeicherte Wert (anderer Tab, geleerter Storage), wird nicht blockiert.
+  var expected = null;
+  try { expected = sessionStorage.getItem("tt_state"); } catch (e) {}
+  if (expected && state && state !== expected) {
+    show("Authorization error", "The security token did not match. Please start the connection again.", true);
+    return;
+  }
+  try { sessionStorage.removeItem("tt_state"); } catch (e) {}
+
+  // Zweiten Einlöseversuch mit demselben Code im selben Tab verhindern.
+  var mark = "tt_used_" + code.slice(-12);
+  try {
+    if (sessionStorage.getItem(mark)) {
+      show("Already used", "This authorization code was already used. Codes are valid once only.", true);
+      return;
+    }
+    sessionStorage.setItem(mark, "1");
+  } catch (e) {}
+
+  jsonp(BACKEND + "?action=ttauth&code=" + encodeURIComponent(code)).then(function (d) {
+    if (d && d.ok) { location.href = "dashboard.html?connected=1"; return; }
+    var e = (d && d.error) || "unknown error";
+    if (/expired|invalid.*code|code.*invalid/i.test(e)) {
+      show("Authorization expired",
+        "TikTok authorization codes are valid for a very short time and only once. Please connect again and complete the TikTok screen without pausing.",
+        true, e);
+    } else {
+      show("Connection error", e, true);
+    }
+  }).catch(function (e) {
+    show("Connection error", e.message + " — the authorization may not have completed. Please try again.", true);
+  });
+})();
 </script>
 </body>
 </html>
