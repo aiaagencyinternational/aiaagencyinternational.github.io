@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/png" href="./favicon.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <title>AIA Studios — Dashboard</title>
 <style>
   :root{color-scheme:dark}
@@ -11,27 +12,45 @@
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#0b0b0f;color:#e9e9ee;line-height:1.6}
   .wrap{max-width:760px;margin:0 auto;padding:32px 20px 64px}
   header{display:flex;align-items:center;gap:12px;margin-bottom:28px}
-  .logo{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#ff2d55,#8a2be2);display:flex;align-items:center;justify-content:center;font-weight:800}
+  header img{width:36px;height:36px;border-radius:9px}
   h1{font-size:1.3rem;margin:0}
   .card{background:#15151d;border:1px solid #23232e;border-radius:14px;padding:20px;margin:16px 0}
   .card h2{font-size:1.05rem;margin:0 0 6px}
   .muted{color:#9a9aa6;font-size:.92rem}
   button,.btn{font:inherit;border:0;border-radius:10px;padding:11px 18px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
-  button:disabled{opacity:.5;cursor:default}
+  button:disabled{opacity:.45;cursor:not-allowed}
   .tt{background:#fe2c55;color:#fff}
   .row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-  .vid{width:120px;height:200px;border-radius:10px;background:linear-gradient(160deg,#ff2d55,#8a2be2,#3a2bd0);display:flex;align-items:center;justify-content:center;font-size:34px;flex:0 0 auto}
-  textarea{width:100%;background:#0b0b0f;border:1px solid #2a2a36;border-radius:8px;color:#e9e9ee;padding:10px;font:inherit;margin-top:6px}
+  .vid{width:112px;height:190px;border-radius:10px;background:linear-gradient(160deg,#ff2d55,#8a2be2,#3a2bd0);display:flex;align-items:center;justify-content:center;font-size:32px;flex:0 0 auto}
+  textarea,select{width:100%;background:#0b0b0f;border:1px solid #2a2a36;border-radius:8px;color:#e9e9ee;padding:10px;font:inherit;margin-top:6px}
+  select:focus,textarea:focus{outline:none;border-color:#8a2be2}
   .pill{display:inline-block;background:#23232e;border-radius:999px;padding:3px 10px;font-size:.8rem;color:#b9b9c4}
+  .pill.ok{background:#12301f;color:#8affc1}
   #status{margin-top:12px;font-size:.92rem}
   .ok{color:#8affc1}.err{color:#ff9d9d}
   a{color:#ff6b8a}
+  /* Creator */
+  .creator{display:flex;align-items:center;gap:12px;padding:12px;background:#101018;border:1px solid #23232e;border-radius:10px;margin-bottom:16px}
+  .creator img{width:42px;height:42px;border-radius:50%;background:#23232e;flex:0 0 auto}
+  .creator .nn{font-weight:700}
+  /* Field blocks */
+  .field{margin-top:18px}
+  .field > label{display:block;font-size:.86rem;color:#b9b9c4;font-weight:600;margin-bottom:2px}
+  .check{display:flex;align-items:flex-start;gap:10px;padding:8px 0;font-size:.93rem}
+  .check input{margin:4px 0 0;width:16px;height:16px;flex:0 0 auto;accent-color:#fe2c55}
+  .check.dis{opacity:.45}
+  .check .cd{font-size:.8rem;color:#71717d;display:block}
+  .sect{border-top:1px solid #1f1f29;margin-top:20px;padding-top:8px}
+  .note{margin-top:10px;padding:10px 12px;background:#1a1a24;border:1px solid #2a2a36;border-radius:9px;font-size:.85rem;color:#b9b9c4}
+  .note.warn{background:#2e1a12;border-color:#5c331c;color:#ffc09a}
+  .label-preview{font-size:.85rem;color:#8affc1;margin-top:6px}
+  .consent{margin-top:16px;font-size:.82rem;color:#8a8a97}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="logo">A</div>
+    <img src="./apple-touch-icon.png" alt="AIA Studios icon">
     <h1>AIA Studios <span class="muted" style="font-weight:400">· Dashboard</span></h1>
   </header>
 
@@ -39,80 +58,278 @@
     <h2>1 · Connect your TikTok account</h2>
     <p class="muted">Authorize AIA Studios to publish your own videos to your own TikTok account. You can revoke access anytime in TikTok settings.</p>
     <div class="row" style="margin-top:12px">
-      <button class="tt" id="loginBtn" onclick="login()">Continue with TikTok</button>
+      <button class="tt" id="loginBtn">Continue with TikTok</button>
       <span class="pill" id="connState">Not connected</span>
     </div>
   </div>
 
   <div class="card" id="postCard" style="opacity:.55">
-    <h2>2 · Publish a video</h2>
-    <p class="muted">Pick a video from your queue and publish it to your connected TikTok account.</p>
-    <div class="row" style="margin-top:14px">
+    <h2>2 · Post a video</h2>
+    <p class="muted">Review the settings below and confirm before publishing. Nothing is sent to TikTok until you press Post.</p>
+
+    <div class="creator" id="creator" style="display:none">
+      <img id="cAvatar" alt="">
+      <div>
+        <div class="nn" id="cNick">—</div>
+        <div class="muted" id="cUser" style="font-size:.84rem">Posting to this TikTok account</div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:14px;align-items:flex-start">
       <div class="vid">▶</div>
-      <div style="flex:1;min-width:220px">
-        <label class="muted">Caption</label>
-        <textarea id="caption" rows="2">POV: main character energy ✨</textarea>
-        <div style="margin-top:12px" class="row">
-          <button class="tt" id="postBtn" onclick="publish()" disabled>Publish to TikTok</button>
-          <span class="pill">demo video · 1080×1920</span>
+      <div style="flex:1;min-width:230px">
+        <div class="field" style="margin-top:0">
+          <label for="caption">Caption</label>
+          <textarea id="caption" rows="3" maxlength="150">POV: main character energy ✨</textarea>
+          <span class="muted" id="capCount">Up to 150 characters.</span>
+        </div>
+
+        <div class="field">
+          <label for="privacy">Who can view this video</label>
+          <select id="privacy">
+            <option value="" selected>Select an option</option>
+          </select>
+          <span class="muted" id="privacyHint">Loaded from your TikTok account settings.</span>
         </div>
       </div>
+    </div>
+
+    <div class="sect">
+      <div class="field" style="margin-top:8px">
+        <label>Allow users to</label>
+        <label class="check" id="wComment"><input type="checkbox" id="allowComment"><span>Comment</span></label>
+        <label class="check" id="wDuet"><input type="checkbox" id="allowDuet"><span>Duet</span></label>
+        <label class="check" id="wStitch"><input type="checkbox" id="allowStitch"><span>Stitch</span></label>
+      </div>
+    </div>
+
+    <div class="sect">
+      <label class="check"><input type="checkbox" id="commercial"><span>Disclose video content
+        <span class="cd">Turn on to disclose that this video promotes goods or services. Your video may be labelled
+        "Promotional content". This cannot be changed once your video is posted.</span></span></label>
+      <div id="commercialBox" style="display:none;padding-left:26px">
+        <label class="check"><input type="checkbox" id="brandOrganic"><span>Your brand
+          <span class="cd">You are promoting yourself or your own business. This video will be classified as
+          Brand Organic.</span></span></label>
+        <label class="check"><input type="checkbox" id="brandContent"><span>Branded content
+          <span class="cd">You are promoting another brand or a third party. This video will be classified as
+          Branded Content.</span></span></label>
+        <div class="label-preview" id="labelPreview"></div>
+      </div>
+      <div class="note warn" id="brandWarn" style="display:none">Branded content visibility cannot be set to private.</div>
+    </div>
+
+    <div class="sect">
+      <label class="check"><input type="checkbox" id="aigc" checked><span>AI-generated content
+        <span class="cd">AIA Studios sets TikTok's built-in AIGC label so viewers can see this video was made with AI.
+        Leave this on for AI-generated or AI-assisted videos.</span></span></label>
+    </div>
+
+    <div class="consent" id="consent">By posting, you agree to TikTok's
+      <a href="https://www.tiktok.com/legal/page/global/music-usage-confirmation/en" target="_blank" rel="noopener">Music Usage Confirmation</a>.</div>
+
+    <div class="row" style="margin-top:16px">
+      <button class="tt" id="postBtn" disabled>Post</button>
+      <span class="pill" id="dur">demo video · 1080×1920</span>
     </div>
     <div id="status"></div>
   </div>
 
   <p class="muted" style="margin-top:24px">AIA Studios only publishes your own content to your own authorized account. ·
-    <a href="./privacy.html">Privacy</a> · <a href="./terms.html">Terms</a></p>
+    <a href="./app.html">Back to app</a> · <a href="./privacy.html">Privacy</a> · <a href="./terms.html">Terms</a></p>
 </div>
 
 <script>
+(function () {
+  "use strict";
   var CFG = {
     CLIENT_KEY: "sbawf0tc4bqqcr3hdg",
     REDIRECT_URI: "https://aiastudios.app/callback.html",
     BACKEND: "https://script.google.com/macros/s/AKfycbwRZBEsTvg4DX_PJISGQwtLoDAfDOjZo95yw86nbnI2JcwIBvlarvLw4CRQ6BOT6fPdzg/exec",
     SCOPES: "user.info.basic,video.publish,video.upload"
   };
-  function rand(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
+  // TikTok-Anzeigenamen der Privacy-Level. Gerendert wird ausschliesslich, was
+  // creator_info/query zurueckgibt - eine hartcodierte Liste ist ein Audit-Fehlgrund.
+  var LEVEL_LABEL = {
+    PUBLIC_TO_EVERYONE: "Everyone",
+    MUTUAL_FOLLOW_FRIENDS: "Friends",
+    FOLLOWER_OF_CREATOR: "Followers",
+    SELF_ONLY: "Only you"
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  var info = null;
+
+  function rand() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+
+  function jsonp(url) {
+    return new Promise(function (res, rej) {
+      var name = "cb_" + rand();
+      var to = setTimeout(function () { rej(new Error("timeout")); }, 40000);
+      window[name] = function (d) { clearTimeout(to); res(d); try { delete window[name]; } catch (e) {} };
+      var sc = document.createElement("script");
+      sc.src = url + (url.indexOf("?") < 0 ? "?" : "&") + "callback=" + name;
+      sc.onerror = function () { clearTimeout(to); rej(new Error("network")); };
+      document.body.appendChild(sc);
+    });
+  }
+
+  // --- OAuth ---------------------------------------------------------------
   // Den client_key erst BEIM KLICK holen: so gilt automatisch der Production-Key,
   // sobald er in den Bot-Properties liegt - ohne diese Datei erneut anzupassen.
-  // (Beim Laden zu holen erzeugte eine Race-Condition: ein schneller Klick nahm noch
-  // den alten Wert.) Der hartcodierte Wert unten ist nur Notfall-Fallback.
-  function startAuth(key){
-    var state=rand(); try{sessionStorage.setItem("tt_state",state);}catch(e){}
-    location.href="https://www.tiktok.com/v2/auth/authorize/?client_key="+encodeURIComponent(key)
-      +"&scope="+encodeURIComponent(CFG.SCOPES)+"&response_type=code&redirect_uri="
-      +encodeURIComponent(CFG.REDIRECT_URI)+"&state="+state;
+  // Der hartcodierte Wert oben ist nur Notfall-Fallback.
+  function startAuth(key) {
+    var state = rand();
+    try { sessionStorage.setItem("tt_state", state); } catch (e) {}
+    location.href = "https://www.tiktok.com/v2/auth/authorize/?client_key=" + encodeURIComponent(key) +
+      "&scope=" + encodeURIComponent(CFG.SCOPES) + "&response_type=code&redirect_uri=" +
+      encodeURIComponent(CFG.REDIRECT_URI) + "&state=" + state;
   }
-  function login(){
-    var btn=document.getElementById("loginBtn");
-    if(btn){ btn.disabled=true; btn.textContent="Connecting…"; }
-    jsonp(CFG.BACKEND+"?action=ttkey")
-      .then(function(d){ startAuth((d&&d.client_key)?d.client_key:CFG.CLIENT_KEY); })
-      .catch(function(){ startAuth(CFG.CLIENT_KEY); });
+  $("loginBtn").addEventListener("click", function () {
+    var btn = $("loginBtn");
+    btn.disabled = true; btn.textContent = "Connecting…";
+    jsonp(CFG.BACKEND + "?action=ttkey")
+      .then(function (d) { startAuth((d && d.client_key) ? d.client_key : CFG.CLIENT_KEY); })
+      .catch(function () { startAuth(CFG.CLIENT_KEY); });
+  });
+
+  // --- Creator info -------------------------------------------------------
+  function applyCreator(d) {
+    info = d;
+    $("creator").style.display = "flex";
+    $("cNick").textContent = d.nickname || "Your TikTok account";
+    $("cUser").textContent = d.username ? ("@" + d.username + " · posting to this account") : "Posting to this TikTok account";
+    if (d.avatar) $("cAvatar").src = d.avatar;
+
+    var sel = $("privacy");
+    sel.innerHTML = "";
+    var ph = document.createElement("option");
+    ph.value = ""; ph.textContent = "Select an option"; ph.selected = true;
+    sel.appendChild(ph);
+    (d.privacy_level_options || []).forEach(function (lv) {
+      var o = document.createElement("option");
+      o.value = lv; o.textContent = LEVEL_LABEL[lv] || lv;
+      sel.appendChild(o);
+    });
+    $("privacyHint").textContent = "Options come from your TikTok account settings. You must choose one.";
+
+    // Interaktions-Toggles: was das Konto nicht erlaubt, wird gesperrt statt versteckt.
+    [["comment_disabled", "allowComment", "wComment"], ["duet_disabled", "allowDuet", "wDuet"],
+     ["stitch_disabled", "allowStitch", "wStitch"]].forEach(function (t) {
+      if (d[t[0]]) {
+        $(t[1]).disabled = true; $(t[1]).checked = false;
+        $(t[2]).className = "check dis";
+        $(t[2]).title = "Turned off in your TikTok account settings";
+      }
+    });
+    if (d.max_video_post_duration_sec) {
+      $("dur").textContent = "demo video · 1080×1920 · max " + d.max_video_post_duration_sec + "s for this account";
+    }
+    refresh();
   }
-  function jsonp(url){return new Promise(function(res,rej){
-    var name="cb_"+rand(); window[name]=function(d){res(d);try{delete window[name];}catch(e){}};
-    var sc=document.createElement("script");
-    sc.src=url+(url.indexOf("?")<0?"?":"&")+"callback="+name;
-    sc.onerror=function(){rej(new Error("network"));};
-    document.body.appendChild(sc);
-  });}
-  var p=new URLSearchParams(location.search);
-  if(p.get("connected")){
-    var cs=document.getElementById("connState");
-    cs.textContent="Connected"; cs.className="pill ok";
-    document.getElementById("loginBtn").textContent="Reconnect";
-    document.getElementById("postCard").style.opacity="1";
-    document.getElementById("postBtn").disabled=false;
+
+  function loadCreator() {
+    $("privacyHint").textContent = "Loading your account settings…";
+    jsonp(CFG.BACKEND + "?action=ttcreator").then(function (d) {
+      if (d && d.ok) { applyCreator(d); }
+      else {
+        $("privacyHint").textContent = "Could not load account settings: " + ((d && d.error) || "unknown");
+        $("privacyHint").className = "err";
+      }
+    }).catch(function (e) {
+      $("privacyHint").textContent = "Could not load account settings: " + e.message;
+      $("privacyHint").className = "err";
+    });
   }
-  function publish(){
-    var s=document.getElementById("status");
-    s.textContent="Publishing to TikTok…"; s.className="";
-    document.getElementById("postBtn").disabled=true;
-    jsonp(CFG.BACKEND+"?action=ttpost&caption="+encodeURIComponent(document.getElementById("caption").value))
-      .then(function(d){ s.textContent=d.ok?"✓ Published to your TikTok account.":("Error: "+(d.error||"unknown")); s.className=d.ok?"ok":"err"; document.getElementById("postBtn").disabled=false; })
-      .catch(function(e){ s.textContent="Error: "+e; s.className="err"; document.getElementById("postBtn").disabled=false; });
+
+  // --- Validation / live state -------------------------------------------
+  function refresh() {
+    var priv = $("privacy").value;
+    var com = $("commercial").checked;
+    var bo = $("brandOrganic").checked;
+    var bc = $("brandContent").checked;
+
+    $("commercialBox").style.display = com ? "block" : "none";
+    if (!com) { $("brandOrganic").checked = false; $("brandContent").checked = false; bo = false; bc = false; }
+
+    // Label-Vorschau genau wie TikTok sie vergibt.
+    var lp = "";
+    if (bc) lp = "Your video will be labelled \"Paid partnership\".";
+    else if (bo) lp = "Your video will be labelled \"Promotional content\".";
+    $("labelPreview").textContent = lp;
+
+    // Branded Content darf nicht privat sein.
+    var conflict = bc && priv === "SELF_ONLY";
+    $("brandWarn").style.display = conflict ? "block" : "none";
+
+    // Zustimmungstext wechselt, sobald Branded Content aktiv ist.
+    $("consent").innerHTML = bc
+      ? 'By posting, you agree to TikTok\'s <a href="https://www.tiktok.com/legal/page/global/bc-policy/en" target="_blank" rel="noopener">Branded Content Policy</a> and <a href="https://www.tiktok.com/legal/page/global/music-usage-confirmation/en" target="_blank" rel="noopener">Music Usage Confirmation</a>.'
+      : 'By posting, you agree to TikTok\'s <a href="https://www.tiktok.com/legal/page/global/music-usage-confirmation/en" target="_blank" rel="noopener">Music Usage Confirmation</a>.';
+
+    // Post ist erst erlaubt, wenn Privacy aktiv gewaehlt ist, kein Konflikt besteht und
+    // - falls die Offenlegung an ist - mindestens eine der beiden Optionen gesetzt ist.
+    var ready = !!info && !!priv && !conflict && (!com || bo || bc);
+    $("postBtn").disabled = !ready;
   }
+
+  ["privacy", "commercial", "brandOrganic", "brandContent", "allowComment", "allowDuet", "allowStitch", "aigc"]
+    .forEach(function (id) { $(id).addEventListener("change", refresh); });
+  $("caption").addEventListener("input", function () {
+    $("capCount").textContent = $("caption").value.length + " / 150 characters.";
+  });
+
+  // --- Publish + status ---------------------------------------------------
+  function pollStatus(id, tries) {
+    if (tries <= 0) return;
+    setTimeout(function () {
+      jsonp(CFG.BACKEND + "?action=ttstatus&publish_id=" + encodeURIComponent(id)).then(function (d) {
+        var s = $("status");
+        if (d && d.ok && d.status) {
+          if (d.status === "PUBLISH_COMPLETE") { s.textContent = "✓ Posted to your TikTok account."; s.className = "ok"; return; }
+          if (d.status === "FAILED") { s.textContent = "TikTok could not process the video: " + (d.fail_reason || "unknown"); s.className = "err"; return; }
+          s.textContent = "TikTok is processing your video… (" + d.status + ")";
+        }
+        pollStatus(id, tries - 1);
+      }).catch(function () { pollStatus(id, tries - 1); });
+    }, 4000);
+  }
+
+  $("postBtn").addEventListener("click", function () {
+    var s = $("status");
+    s.textContent = "Sending to TikTok…"; s.className = "";
+    $("postBtn").disabled = true;
+    var q = "?action=ttpost" +
+      "&caption=" + encodeURIComponent($("caption").value) +
+      "&privacy_level=" + encodeURIComponent($("privacy").value) +
+      "&disable_comment=" + ($("allowComment").checked ? "0" : "1") +
+      "&disable_duet=" + ($("allowDuet").checked ? "0" : "1") +
+      "&disable_stitch=" + ($("allowStitch").checked ? "0" : "1") +
+      "&brand_organic_toggle=" + ($("brandOrganic").checked ? "1" : "0") +
+      "&brand_content_toggle=" + ($("brandContent").checked ? "1" : "0") +
+      "&is_aigc=" + ($("aigc").checked ? "1" : "0");
+    jsonp(CFG.BACKEND + q).then(function (d) {
+      if (d && d.ok) {
+        s.textContent = "Sent to TikTok. Waiting for processing…"; s.className = "";
+        pollStatus(d.publish_id, 12);
+      } else {
+        s.textContent = "Error: " + ((d && d.error) || "unknown"); s.className = "err";
+      }
+      refresh();
+    }).catch(function (e) {
+      s.textContent = "Error: " + e.message; s.className = "err";
+      refresh();
+    });
+  });
+
+  // --- Connected? ---------------------------------------------------------
+  if (new URLSearchParams(location.search).get("connected")) {
+    $("connState").textContent = "Connected";
+    $("connState").className = "pill ok";
+    $("loginBtn").textContent = "Reconnect";
+    $("postCard").style.opacity = "1";
+    loadCreator();
+  }
+})();
 </script>
 </body>
 </html>
